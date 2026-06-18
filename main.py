@@ -1,10 +1,13 @@
 import tkinter as tk
 
-root = tk.Tk()
-root.title("Welcome To Python")
-root.geometry("300x200")
+from controllers.biodata_controller import BioDataController
 
-label = tk.Label(root, text="Zennn")
-label.pack()
 
-root.mainloop()
+def main():
+    root = tk.Tk()
+    app = BioDataController(root)
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
