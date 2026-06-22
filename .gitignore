@@ -46,3 +46,7 @@ Thumbs.db
 
 # --- Environment ---
 .env
+
+# --- Local agent files ---
+.agent/
+AGENTS.md
