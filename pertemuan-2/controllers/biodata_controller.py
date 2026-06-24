@@ -2,10 +2,12 @@ from tkinter import messagebox
 
 from models.absensi_model import AbsensiModel
 from models.user_model import UserModel
+from views.absensi_admin_view import AbsensiAdminView
 from views.absensi_view import AbsensiView
 from views.biodata_db_view import BiodataDbView
 from views.dashboard_view import DashboardView
 from views.edit_biodata_view import EditBiodataView
+from views.edit_absensi_view import EditAbsensiView
 from views.login_view import LoginView
 from views.register_view import RegisterView
 from views.riwayat_view import RiwayatView
@@ -77,13 +79,15 @@ class BioDataController:
             return
         self.refresh_current_user()
         self.clear_window()
-        today_absensi = self.absensi_model.get_absensi_hari_ini(self.current_user["id"])
+        today_absensi = None
+        if self.current_user["role"] != "admin":
+            today_absensi = self.absensi_model.get_absensi_hari_ini(self.current_user["id"])
         self.view = DashboardView(
             self.root,
             self.current_user,
             today_absensi,
             {
-                "absensi": self.show_absensi,
+                "absensi": self.show_absensi if self.current_user["role"] != "admin" else self.show_absensi_admin,
                 "biodata": self.show_biodata,
                 "riwayat": self.show_riwayat,
                 "edit_biodata": self.show_edit_biodata,
@@ -141,6 +145,45 @@ class BioDataController:
         self.clear_window()
         self.view = EditBiodataView(self.root, biodata, self.handle_update_biodata, self.show_dashboard)
         self.view.show()
+
+    def show_absensi_admin(self):
+        if not self.require_login():
+            return
+        if self.current_user["role"] != "admin":
+            messagebox.showerror("Akses Ditolak", "Hanya admin yang boleh melihat absensi mahasiswa")
+            self.show_dashboard()
+            return
+        rekap = self.absensi_model.get_rekap_mahasiswa()
+        self.clear_window()
+        self.view = AbsensiAdminView(self.root, rekap, self.show_edit_absensi_admin, self.show_dashboard)
+        self.view.show()
+
+    def show_edit_absensi_admin(self, record):
+        if not self.require_login():
+            return
+        if self.current_user["role"] != "admin":
+            messagebox.showerror("Akses Ditolak", "Hanya admin yang boleh mengedit absensi mahasiswa")
+            self.show_dashboard()
+            return
+        self.clear_window()
+        self.view = EditAbsensiView(self.root, record, lambda data: self.handle_update_absensi_admin(record, data), self.show_absensi_admin)
+        self.view.show()
+
+    def handle_update_absensi_admin(self, record, data):
+        if not self.require_login():
+            return
+        try:
+            self.absensi_model.save_validasi_absensi(
+                record["user_id"],
+                record["tanggal"],
+                data["status"],
+                data["keterangan"],
+                record["jam_masuk"] if record["jam_masuk"] else None,
+            )
+            self.view.show_success("Absensi mahasiswa berhasil diperbarui")
+            self.show_absensi_admin()
+        except ValueError as error:
+            self.view.show_error(str(error))
 
     def handle_update_biodata(self, data):
         if not self.require_login():

@@ -135,8 +135,21 @@ class UserModel:
         if not user:
             return None
 
-        if self.verify_password_hash(password, user["password"]):
+        stored_password = user["password"]
+        if self.verify_password_hash(password, stored_password):
             return user
+
+        if stored_password and not stored_password.startswith(f"pbkdf2_{self.HASH_NAME}$"):
+            if password == stored_password:
+                hashed_password = self.hash_password(password)
+                with get_connection() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "UPDATE users SET password = ? WHERE id = ?",
+                        (hashed_password, user["id"]),
+                    )
+                    conn.commit()
+                return self.find_by_id(user["id"])
 
         return None
 

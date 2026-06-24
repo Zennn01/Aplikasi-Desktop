@@ -44,7 +44,8 @@ class BiodataDbView:
             ("Jurusan", "jurusan"), ("Email", "email"), ("Telepon", "telepon"),
             ("Hobi", "hobi"),
         ]:
-            self._row(content, label, self.biodata[key] or "-")
+            value = self.biodata[key] or "-"
+            self._row(content, label, value)
         tk.Button(card, text="Kembali ke Dashboard", command=self.on_back, bg="#2563eb", fg="white", relief="flat", font=("Arial", 10, "bold"), cursor="hand2").pack(fill="x", padx=40, ipady=8, pady=(0, 16))
 
     def destroy(self):

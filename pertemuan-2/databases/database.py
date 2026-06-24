@@ -1,4 +1,6 @@
 from pathlib import Path
+import hashlib
+import os
 import sqlite3
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -18,6 +20,18 @@ ABSENSI_COLUMNS = {
     "jam_pulang": "TIME",
     "keterangan": "TEXT DEFAULT ''",
 }
+
+
+def hash_password(password):
+    """Hash password default tanpa bergantung ke model."""
+    salt = os.urandom(16)
+    password_hash = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        120_000,
+    )
+    return f"pbkdf2_sha256$120000${salt.hex()}${password_hash.hex()}"
 
 def get_connection():
     """Get database connection with consistent settings."""
@@ -51,13 +65,14 @@ def migrate_database(cursor):
     for column_name, column_definition in ABSENSI_COLUMNS.items():
         add_column_if_missing(cursor, "absensi", column_name, column_definition)
 
+    cursor.execute("UPDATE users SET role = ? WHERE role = ?", ("admin", "dosen"))
     cursor.execute(
         """
         UPDATE users
         SET role = ?
         WHERE role NOT IN (?, ?)
         """,
-        ("admin", "mahasiswa", "admin"),
+        ("mahasiswa", "mahasiswa", "admin"),
     )
 
     cursor.execute("UPDATE users SET alamat = ? WHERE alamat IS NULL", ("",))
@@ -113,25 +128,33 @@ def insert_default_data():
     cursor = conn.cursor()
     
     try:
-        # Check if data already exists
-        cursor.execute("SELECT COUNT(*) FROM users")
-        if cursor.fetchone()[0] == 0:
-            cursor.execute('''
-                INSERT INTO users (username, password, role, nama, alamat)
-                VALUES (?, ?, ?, ?, ?)
-            ''', ('admin', '123456', 'admin', 'Administrator', 'Kampus'))
-             
-            cursor.execute('''
-                INSERT INTO users (username, password, role, nama, alamat)
-                VALUES (?, ?, ?, ?, ?)
-            ''', ('mahasiswa1', '123456', 'mahasiswa', 'Andi Pratama', 'Jakarta'))
-             
-            cursor.execute('''
-                INSERT INTO users (username, password, role, nama, alamat)
-                VALUES (?, ?, ?, ?, ?)
-            ''', ('mahasiswa2', '123456', 'mahasiswa', 'Siti Nurhaliza', 'Bandung'))
-            
-            conn.commit()
+        defaults = [
+            ('admin', 'admin', 'Administrator', 'Kampus'),
+            ('mahasiswa1', 'mahasiswa', 'Andi Pratama', 'Jakarta'),
+            ('mahasiswa2', 'mahasiswa', 'Siti Nurhaliza', 'Bandung'),
+        ]
+        for username, role, nama, alamat in defaults:
+            cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET password = ?, role = ?, nama = ?, alamat = ?
+                    WHERE username = ?
+                    """,
+                    (hash_password('123456'), role, nama, alamat, username),
+                )
+            else:
+                cursor.execute(
+                    """
+                    INSERT INTO users (username, password, role, nama, alamat)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (username, hash_password('123456'), role, nama, alamat),
+                )
+
+        conn.commit()
     except sqlite3.IntegrityError:
         pass
     finally:

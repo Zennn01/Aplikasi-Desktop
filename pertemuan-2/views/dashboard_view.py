@@ -19,16 +19,21 @@ class DashboardView:
         card.pack(fill="both", expand=True)
 
         tk.Label(card, text=f"Halo, {self.user['nama']}", bg="white", fg="#0f172a", font=("Arial", 20, "bold")).pack(pady=(32, 8))
-        info = "Belum absen hari ini"
-        if self.today_absensi:
-            info = f"Hari ini: {self.today_absensi['status']} pukul {self.today_absensi['jam_masuk']}"
+        if self.user["role"] == "admin":
+            info = "Kelola absensi mahasiswa"
+        else:
+            info = "Belum absen hari ini"
+            if self.today_absensi:
+                info = f"Hari ini: {self.today_absensi['status']} pukul {self.today_absensi['jam_masuk']}"
         tk.Label(card, text=info, bg="white", fg="#64748b", font=("Arial", 11)).pack(pady=(0, 24))
 
-        self._button(card, "Absensi", self.handlers["absensi"], "#2563eb")
-        self._button(card, "Biodata", self.handlers["biodata"], "#0f766e")
-        self._button(card, "Riwayat Absensi", self.handlers["riwayat"], "#7c3aed")
         if self.user["role"] == "admin":
+            self._button(card, "Absensi Mahasiswa", self.handlers["absensi"], "#334155")
             self._button(card, "Edit Biodata Pengguna", self.handlers["edit_biodata"], "#ea580c")
+        else:
+            self._button(card, "Absensi", self.handlers["absensi"], "#2563eb")
+            self._button(card, "Biodata", self.handlers["biodata"], "#0f766e")
+            self._button(card, "Riwayat Absensi", self.handlers["riwayat"], "#7c3aed")
         self._button(card, "Logout", self.handlers["logout"], "#dc2626")
 
     def destroy(self):

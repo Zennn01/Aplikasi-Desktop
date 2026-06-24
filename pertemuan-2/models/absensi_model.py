@@ -82,3 +82,94 @@ class AbsensiModel:
                 (user_id,),
             )
             return cursor.fetchall()
+
+    def get_rekap_mahasiswa(self, tanggal=None):
+        """Ambil rekap absensi mahasiswa untuk tanggal tertentu."""
+        tanggal = tanggal or datetime.now().date().isoformat()
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT
+                    u.id AS user_id,
+                    u.username,
+                    u.nama,
+                    a.id AS absensi_id,
+                    ? AS tanggal,
+                    a.jam_masuk,
+                    a.status,
+                    a.keterangan
+                FROM users u
+                LEFT JOIN absensi a
+                    ON a.user_id = u.id AND a.tanggal = ?
+                WHERE u.role = 'mahasiswa'
+                ORDER BY u.nama ASC, u.username ASC
+                """,
+                (tanggal, tanggal),
+            )
+            return cursor.fetchall()
+
+    def get_absensi_by_user_and_date(self, user_id, tanggal):
+        """Ambil absensi satu pengguna pada tanggal tertentu."""
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT *
+                FROM absensi
+                WHERE user_id = ? AND tanggal = ?
+                """,
+                (user_id, tanggal),
+            )
+            return cursor.fetchone()
+
+    def save_validasi_absensi(self, user_id, tanggal, status, keterangan="", jam_masuk=None):
+        """Simpan atau perbarui absensi untuk keperluan validasi admin."""
+        if not user_id:
+            raise ValueError("ID pengguna wajib diisi")
+        if not tanggal:
+            raise ValueError("Tanggal wajib diisi")
+
+        status = (status or "").strip().lower()
+        if status not in self.VALID_STATUS:
+            raise ValueError("Status absensi tidak valid")
+
+        current = self.get_absensi_by_user_and_date(user_id, tanggal)
+        jam_masuk_value = jam_masuk
+        if jam_masuk_value is None and current and current["jam_masuk"]:
+            jam_masuk_value = current["jam_masuk"]
+        if jam_masuk_value is None:
+            jam_masuk_value = datetime.now().time().replace(microsecond=0).isoformat()
+
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            if current:
+                cursor.execute(
+                    """
+                    UPDATE absensi
+                    SET jam_masuk = ?, status = ?, keterangan = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        jam_masuk_value,
+                        status,
+                        (keterangan or "").strip(),
+                        current["id"],
+                    ),
+                )
+                return current["id"]
+
+            cursor.execute(
+                """
+                INSERT INTO absensi (user_id, tanggal, jam_masuk, status, keterangan)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    user_id,
+                    tanggal,
+                    jam_masuk_value,
+                    status,
+                    (keterangan or "").strip(),
+                ),
+            )
+            return cursor.lastrowid
