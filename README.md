@@ -163,6 +163,22 @@ Setelah menjalankan `pertemuan-2/databases/database.py`, akun default yang terse
 | `mahasiswa1` | `123456` | `mahasiswa` |
 | `mahasiswa2` | `123456` | `mahasiswa` |
 
+## Dokumentasi Tampilan
+
+Screenshot aplikasi disimpan di `pertemuan-2/Documents/`:
+
+### Login
+
+![Login Absensi](pertemuan-2/Documents/Screenshot_2026-06-24-112239.png)
+
+### Dashboard Mahasiswa
+
+![Dashboard Mahasiswa](pertemuan-2/Documents/Screenshot_2026-06-24-112301.png)
+
+### Dashboard Admin
+
+![Dashboard Admin](pertemuan-2/Documents/Screenshot_2026-06-24-112319.png)
+
 ## Troubleshooting
 
 | Masalah | Solusi |
@@ -177,4 +193,3 @@ Setelah menjalankan `pertemuan-2/databases/database.py`, akun default yang terse
 - Aplikasi `pertemuan-2` masih memakai nama `BioDataController`, tetapi fungsinya sekarang adalah controller utama untuk login dan navigasi.
 - Akses admin dibatasi untuk halaman rekap absensi dan edit biodata pengguna.
 - Data biodata mengikuti user yang sedang login, bukan biodata statis seperti versi pertama.
-
