@@ -1,228 +1,180 @@
-# 📋 Aplikasi Desktop — Biodata & Absensi
+# Aplikasi Desktop Absensi
 
-Repositori berisi aplikasi desktop untuk manajemen biodata (profil pengguna) dan absensi menggunakan Python (Tkinter) & SQLite. Dokumentasi ini menyelaraskan istilah sehingga "Biodata" dan "Absensi" dipahami dengan konsisten.
+Repositori ini berisi dua versi aplikasi desktop Python berbasis Tkinter dan SQLite:
 
----
+- `Pertemuan-1` untuk versi awal biodata statis
+- `pertemuan-2` untuk versi yang lebih lengkap dengan login, register, biodata, absensi, dan riwayat
 
-## 📂 Struktur Project (root)
+Versi yang paling relevan saat ini adalah `pertemuan-2`.
 
-```
-Aplikasi-Desktop/
-├── Pertemuan-1/          # Versi 1 (folder kapital P) — Aplikasi Biodata Sederhana
-├── pertemuan-2/          # Versi 2 (folder lowercase) — Aplikasi dengan Absensi & Auth
-│   └── README.md         # Dokumentasi detil versi 2
-└── README.md             # File ini (ringkasan & quick start)
-```
+## Ringkasan Project
 
----
+Project memakai pola MVC:
 
-## 🎯 Ringkasan Fitur
+- `models/` untuk akses data dan logika database
+- `views/` untuk tampilan Tkinter
+- `controllers/` untuk navigasi dan alur aplikasi
+- `databases/` untuk inisialisasi dan migrasi SQLite
 
-Project ini menggabungkan dua fitur utama:
-- **Biodata**: pengelolaan profil pengguna (nama, alamat, NIM, dsb.)
-- **Absensi**: pencatatan kehadiran (jam masuk/pulang, status, riwayat)
+## Struktur Folder
 
-Kedua fitur dihubungkan oleh controller utama `BioDataController` yang melakukan navigasi antar view dan memanggil model untuk operasi database.
-
----
-
-## 📁 Penjelasan Lengkap Per Folder
-
-### 🔹 **Pertemuan-1** — Aplikasi Biodata Sederhana (Versi Pertama)
-
-Versi pertama aplikasi yang fokus pada **menampilkan biodata pengguna** dalam format kartu (card).
-
-#### Struktur folder:
-
-```
-Pertemuan-1/
-├── main.py               # Entry point aplikasi
-├── test.py               # Sanity check: verifikasi tools & dependencies
-├── controllers/
-│   └── biodata_controller.py    # Koordinator logic & view
-├── models/
-│   └── biodata_model.py         # Data biodata (hardcoded)
-├── views/
-│   └── biodata_view.py          # UI tampilan kartu biodata
-└── databases/
-    ├── database.py              # Setup database SQLite & seed data
-    └── absensi.db               # File database (auto-generated)
+```text
+Desktop/
+├── Pertemuan-1/
+│   ├── main.py
+│   ├── test.py
+│   ├── controllers/
+│   ├── models/
+│   ├── views/
+│   └── databases/
+├── pertemuan-2/
+│   ├── main.py
+│   ├── test.py
+│   ├── controllers/
+│   ├── models/
+│   ├── views/
+│   ├── databases/
+│   └── AGENTS.md
+└── README.md
 ```
 
-#### Penjelasan file per file:
+## Versi 1: `Pertemuan-1`
 
-**`main.py`** — Entry Point
-- Inisialisasi window Tkinter
-- Membuat instance `BioDataController`
-- Menjalankan aplikasi dengan `.run()`
+Versi awal aplikasi hanya menampilkan biodata statis dari file model.
 
-**`test.py`** — Sanity Check
-- Verifikasi kesiapan environment: Python, Tkinter, SQLite3, Pillow
-- Menampilkan popup confirmation jika semua tools siap
+### Fitur
 
-**`controllers/biodata_controller.py`** — MVC Controller
-- Menghubungkan antara model (data) dan view (UI)
-- Mengambil data dari `BioDataModel`
-- Menampilkan ke UI menggunakan `BioDataView`
-- Menjalankan event loop Tkinter
+- Menampilkan biodata dalam kartu Tkinter
+- Data diambil dari `models/biodata_model.py`
+- Ada sanity check sederhana untuk Tkinter, SQLite, dan Pillow
 
-**`models/biodata_model.py`** — Data Model
-- Menyimpan data biodata dalam dictionary (hardcoded)
-- Field: nama, NIM, kelas, jurusan, email, telepon, alamat, hobi
-- Method `get_biodata()` mengembalikan data dalam bentuk dictionary
+### Entry point
 
-**`views/biodata_view.py`** — UI Layer
-- Membuat UI kartu biodata dengan Tkinter
-- Header biru dengan avatar & nama
-- Body berisi daftar field biodata
-- Styling: border, font, warna, padding
-- Method `show_card()` untuk menampilkan kartu
-- Method `_add_info_row()` helper untuk baris info individual
+- `Pertemuan-1/main.py`
 
-**`databases/database.py`** — Database Setup
-- **`get_connection()`** — Membuat koneksi ke SQLite
-- **`init_database()`** — Membuat tabel `users` dan `absensi`
-  - Tabel `users`: id, username, password, role, nama, created_at
-  - Tabel `absensi`: id, user_id, tanggal, jam_masuk, jam_pulang, status, keterangan, created_at
-- **`insert_default_data()`** — Insert akun demo:
-  - Dosen: `dosen1` / `123456`
-  - Mahasiswa: `mahasiswa1` / `123456`, `mahasiswa2` / `123456`
-- **`absensi.db`** — SQLite database file (auto-generated setelah menjalankan database.py)
+### File utama
 
----
+- `controllers/biodata_controller.py` untuk menghubungkan model dan view
+- `models/biodata_model.py` untuk data biodata statis
+- `views/biodata_view.py` untuk tampilan kartu biodata
+- `databases/database.py` untuk inisialisasi database SQLite lokal
+- `test.py` untuk pengecekan environment
 
-### 🔹 **pertemuan-2** — Aplikasi Biodata + Absensi + Authentication (Versi Perbaikan)
+## Versi 2: `pertemuan-2`
 
-Versi lanjutan dengan fitur **authentication**, **manajemen pengguna**, dan **pencatatan absensi**.
+Ini adalah versi yang sedang aktif dikembangkan. Aplikasinya sudah memakai autentikasi dan data tersimpan di SQLite.
 
-*Lihat: `pertemuan-2/README.md` untuk dokumentasi detail versi 2*
+### Fitur saat ini
 
-#### Perbedaan utama vs Pertemuan-1:
-- ✅ Sistem login (authentication)
-- ✅ Multi-user support
-- ✅ Navigasi antar halaman (dashboard, biodata, absensi)
-- ✅ CRUD operations lebih kompleks
+- Login pengguna
+- Registrasi akun baru
+- Dashboard berdasarkan role
+- Lihat biodata pengguna login
+- Edit biodata pengguna
+- Absen masuk untuk mahasiswa
+- Riwayat absensi per pengguna
+- Validasi absensi mahasiswa oleh admin
 
----
+### Role pengguna
 
-## 🚀 Quick Start (Jalankan Aplikasi)
+- `admin`
+- `mahasiswa`
 
-### 1️⃣ **Pertemuan-1 (Rekomendasi untuk pemula)**
+### Entry point
+
+- `pertemuan-2/main.py`
+
+### File utama
+
+- `controllers/biodata_controller.py` untuk navigasi dan session
+- `models/user_model.py` untuk login, register, dan biodata
+- `models/absensi_model.py` untuk operasi absensi
+- `views/login_view.py` untuk halaman login
+- `views/register_view.py` untuk halaman registrasi
+- `views/dashboard_view.py` untuk dashboard utama
+- `views/biodata_db_view.py` untuk tampilan biodata pengguna login
+- `views/edit_biodata_view.py` untuk edit biodata
+- `views/absensi_view.py` untuk absen mahasiswa
+- `views/riwayat_view.py` untuk riwayat absensi
+- `views/absensi_admin_view.py` untuk rekap absensi mahasiswa
+- `views/edit_absensi_view.py` untuk validasi absensi oleh admin
+- `databases/database.py` untuk inisialisasi dan migrasi database
+
+## Database
+
+Database SQLite bernama `absensi.db` dibuat di folder masing-masing project saat aplikasi dijalankan.
+
+Skema utama di `pertemuan-2`:
+
+- `users`
+- `absensi`
+
+Catatan:
+
+- Password default disimpan dalam bentuk hash PBKDF2 untuk data seed baru.
+- Data lama yang masih plaintext akan dimigrasi saat login.
+- Fitur `jam_pulang` masih tersedia di skema, tetapi alurnya belum dipakai di UI sekarang.
+
+## Cara Menjalankan
+
+### 1. Versi `Pertemuan-1`
 
 ```bash
-# Clone repo
-git clone https://github.com/Zennn01/Aplikasi-Desktop.git
-cd Aplikasi-Desktop
-
-# Install dependency
-pip install pillow
-
-# Buka folder Pertemuan-1
 cd Pertemuan-1
-
-# Setup database (opsional)
 python databases/database.py
-
-# Jalankan aplikasi
 python main.py
-
-# Jalankan sanity check
-python test.py
 ```
 
-**Expected Output:**
-- Jendela aplikasi membuka dengan kartu biodata
-- Menampilkan data: Nama, NIM, Kelas, Jurusan, Email, Telepon, Alamat, Hobi
-
----
-
-### 2️⃣ **pertemuan-2 (Rekomendasi untuk production)**
+### 2. Versi `pertemuan-2`
 
 ```bash
 cd pertemuan-2
-
-# Setup database
 python databases/database.py
-
-# Jalankan aplikasi
 python main.py
+```
 
-# Jalankan sanity check
+### Sanity check
+
+```bash
 python test.py
 ```
 
-**Expected Output:**
-- Jendela login screen
-- Masuk dengan akun: `mahasiswa1` / `123456` atau `admin` / `123456`
-- Dashboard dengan fitur biodata & absensi
+Jalankan perintah di atas dari folder project yang ingin diuji.
 
----
+## Dependensi
 
-## 👥 Akun Demo (Data Seed)
+Untuk menjalankan aplikasi:
 
-### Pertemuan-1 & Pertemuan-2
+- Python 3
+- Tkinter
+- SQLite3
 
-| Username | Password | Role | Status |
-|----------|----------|------|--------|
-| `admin` | `123456` | Admin | ✅ Pertemuan-2 only |
-| `mahasiswa1` | `123456` | Mahasiswa | ✅ |
-| `mahasiswa2` | `123456` | Mahasiswa | ✅ |
+Untuk sanity check `test.py`:
 
-> **Catatan Security:** Password disimpan plain-text untuk development. **Jangan gunakan di production!**
+- Pillow (`pip install pillow`)
 
----
+## Akun Demo
 
-## 🛠 Troubleshooting
+Setelah menjalankan `pertemuan-2/databases/database.py`, akun default yang tersedia adalah:
 
-| Error | Solusi |
-|-------|--------|
-| `ModuleNotFoundError: No module named 'PIL'` | `pip install pillow` |
-| `ModuleNotFoundError: No module named 'tkinter'` | Pasang tkinter sesuai OS (biasanya included Python) |
-| `Database is locked` | Tutup proses lain yang mengakses `absensi.db` |
-| Aplikasi tidak merespons | Pastikan Python & Tkinter terpasang dengan benar |
+| Username | Password | Role |
+| --- | --- | --- |
+| `admin` | `123456` | `admin` |
+| `mahasiswa1` | `123456` | `mahasiswa` |
+| `mahasiswa2` | `123456` | `mahasiswa` |
 
----
+## Troubleshooting
 
-## 📊 Arsitektur MVC
+| Masalah | Solusi |
+| --- | --- |
+| `ModuleNotFoundError: No module named 'PIL'` | Jalankan `pip install pillow` |
+| `ModuleNotFoundError: No module named 'tkinter'` | Instal Tkinter sesuai sistem operasi |
+| Database tidak terbaca | Pastikan menjalankan perintah dari folder project yang benar |
+| `Database is locked` | Tutup proses lain yang masih memakai `absensi.db` |
 
-Aplikasi menggunakan pola **Model-View-Controller (MVC)**:
+## Catatan Implementasi
 
-```
-┌─────────────┐
-│   View      │  ← Menampilkan UI (Tkinter)
-└──────┬──────┘
-       │
-┌──────▼──────┐
-│ Controller  │  ← Koordinator logic
-└──────┬──────┘
-       │
-┌──────▼──────┐
-│   Model     │  ← Mengelola data (dict/database)
-└─────────────┘
-```
+- Aplikasi `pertemuan-2` masih memakai nama `BioDataController`, tetapi fungsinya sekarang adalah controller utama untuk login dan navigasi.
+- Akses admin dibatasi untuk halaman rekap absensi dan edit biodata pengguna.
+- Data biodata mengikuti user yang sedang login, bukan biodata statis seperti versi pertama.
 
-**Alur:**
-1. `main.py` → inisialisasi Controller
-2. Controller → ambil data dari Model
-3. Controller → render View dengan data
-4. View → tampilkan UI ke user
-
----
-
-## 🔗 Dokumentasi Detil
-
-- **Pertemuan-1 Documentation:** `Pertemuan-1/` (folder ini)
-- **Pertemuan-2 Documentation:** `pertemuan-2/README.md` — dokumentasi lengkap versi 2 (rekomendasi)
-
----
-
-## 📌 Catatan Developer
-
-- `BioDataController` menangani navigasi dan logika untuk biodata serta absensi.
-- Database default dan akun seed dibuat oleh `databases/database.py`.
-- Password disimpan plain-text untuk keperluan development; jangan dipakai di produksi.
-- Gunakan **pertemuan-2** untuk aplikasi yang lebih matang & production-ready.
-
----
-
-**Last Updated:** 2026-06-24
