@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from views.window_utils import center_window
+
 
 class RiwayatView:
     def __init__(self, root, riwayat, on_back):
@@ -11,7 +13,7 @@ class RiwayatView:
 
     def show(self):
         self.root.title("Riwayat Absensi")
-        self.root.geometry("760x480")
+        center_window(self.root, 760, 480)
         self.root.configure(bg="#eef2f7")
         self.frame = tk.Frame(self.root, bg="#eef2f7")
         self.frame.pack(fill="both", expand=True, padx=24, pady=24)

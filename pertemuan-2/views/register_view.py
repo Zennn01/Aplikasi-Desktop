@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from views.window_utils import center_window
+
 
 class RegisterView:
     """Tampilan halaman register."""
@@ -17,7 +19,7 @@ class RegisterView:
 
     def show(self):
         self.root.title("Register Aplikasi Absensi")
-        self.root.geometry("560x620")
+        center_window(self.root, 560, 620)
         self.root.minsize(460, 420)
         self.root.configure(bg="#eef2f7")
         self.root.resizable(True, True)

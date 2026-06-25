@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from views.window_utils import center_window
+
 
 class AbsensiAdminView:
     def __init__(self, root, absensi_rows, on_edit, on_back):
@@ -13,7 +15,7 @@ class AbsensiAdminView:
 
     def show(self):
         self.root.title("Absensi Mahasiswa")
-        self.root.geometry("960x540")
+        center_window(self.root, 960, 540)
         self.root.configure(bg="#eef2f7")
         self.frame = tk.Frame(self.root, bg="#eef2f7")
         self.frame.pack(fill="both", expand=True, padx=24, pady=24)
@@ -33,11 +35,15 @@ class AbsensiAdminView:
             font=("Arial", 10),
         ).pack(pady=(0, 12))
 
-        table_wrap = tk.Frame(self.frame, bg="white", highlightbackground="#d9e2ec", highlightthickness=1)
+        table_wrap = tk.Frame(
+            self.frame, bg="white", highlightbackground="#d9e2ec", highlightthickness=1
+        )
         table_wrap.pack(fill="both", expand=True)
 
         columns = ("nama", "username", "tanggal", "jam_masuk", "status", "keterangan")
-        self.tree = ttk.Treeview(table_wrap, columns=columns, show="headings", height=15)
+        self.tree = ttk.Treeview(
+            table_wrap, columns=columns, show="headings", height=15
+        )
         for col, title, width in [
             ("nama", "Nama", 180),
             ("username", "Username", 120),
@@ -50,7 +56,9 @@ class AbsensiAdminView:
             self.tree.column(col, width=width, anchor="w")
         self.tree.pack(fill="both", expand=True, side="left")
 
-        scrollbar = ttk.Scrollbar(table_wrap, orient="vertical", command=self.tree.yview)
+        scrollbar = ttk.Scrollbar(
+            table_wrap, orient="vertical", command=self.tree.yview
+        )
         scrollbar.pack(side="right", fill="y")
         self.tree.configure(yscrollcommand=scrollbar.set)
 

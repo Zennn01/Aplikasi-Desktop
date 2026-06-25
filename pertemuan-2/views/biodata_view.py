@@ -1,11 +1,13 @@
 import tkinter as tk
 
+from views.window_utils import center_window
+
 
 class BioDataView:
     def __init__(self, root):
         self.root = root
         self.root.title("Biodata Saya")
-        self.root.geometry("520x620")
+        center_window(self.root, 520, 620)
         self.root.configure(bg="#eef2f7")
         self.root.resizable(False, False)
 

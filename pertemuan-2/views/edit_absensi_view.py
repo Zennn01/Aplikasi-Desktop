@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+from views.window_utils import center_window
+
 
 class EditAbsensiView:
     def __init__(self, root, record, on_save, on_back):
@@ -15,7 +17,7 @@ class EditAbsensiView:
 
     def show(self):
         self.root.title("Edit Validasi Absensi")
-        self.root.geometry("560x520")
+        center_window(self.root, 560, 520)
         self.root.minsize(460, 420)
         self.root.resizable(True, True)
         self.root.configure(bg="#eef2f7")

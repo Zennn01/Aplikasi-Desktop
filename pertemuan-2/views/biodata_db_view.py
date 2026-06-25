@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from views.window_utils import center_window
+
 
 class BiodataDbView:
     def __init__(self, root, biodata, on_back):
@@ -11,7 +13,7 @@ class BiodataDbView:
 
     def show(self):
         self.root.title("Biodata")
-        self.root.geometry("560x620")
+        center_window(self.root, 560, 620)
         self.root.minsize(460, 420)
         self.root.resizable(True, True)
         self.root.configure(bg="#eef2f7")

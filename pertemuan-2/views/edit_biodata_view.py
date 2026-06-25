@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from views.window_utils import center_window
+
 
 class EditBiodataView:
     def __init__(self, root, biodata, on_save, on_back):
@@ -13,7 +15,7 @@ class EditBiodataView:
 
     def show(self):
         self.root.title("Edit Biodata")
-        self.root.geometry("560x620")
+        center_window(self.root, 560, 620)
         self.root.configure(bg="#eef2f7")
         self.frame = tk.Frame(self.root, bg="#eef2f7")
         self.frame.pack(fill="both", expand=True, padx=28, pady=20)

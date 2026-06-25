@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from views.window_utils import center_window
+
 
 class LoginView:
     """Tampilan halaman login."""
@@ -15,7 +17,7 @@ class LoginView:
 
     def show(self):
         self.root.title("Login Aplikasi Absensi")
-        self.root.geometry("420x420")
+        center_window(self.root, 420, 420)
         self.root.configure(bg="#eef2f7")
         self.root.resizable(False, False)
 

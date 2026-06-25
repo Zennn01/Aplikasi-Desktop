@@ -9,7 +9,7 @@ class AbsensiModel:
 
     VALID_STATUS = {"hadir", "izin", "sakit", "alfa"}
 
-    def absen_masuk(self, user_id, status="hadir", keterangan=""):
+    def absen_masuk(self, user_id, status="hadir", keterangan="", current_time=None):
         """Catat absen masuk pengguna untuk tanggal hari ini."""
         if not user_id:
             raise ValueError("ID pengguna wajib diisi")
@@ -18,7 +18,7 @@ class AbsensiModel:
         if status not in self.VALID_STATUS:
             raise ValueError("Status absensi tidak valid")
 
-        now = datetime.now()
+        now = current_time or datetime.now()
         tanggal = now.date().isoformat()
         jam_masuk = now.time().replace(microsecond=0).isoformat()
 
@@ -52,9 +52,9 @@ class AbsensiModel:
         """
         raise NotImplementedError("Fitur jam pulang tidak dipakai")
 
-    def get_absensi_hari_ini(self, user_id):
+    def get_absensi_hari_ini(self, user_id, current_date=None):
         """Ambil absensi pengguna untuk tanggal hari ini."""
-        tanggal = datetime.now().date().isoformat()
+        tanggal = current_date or datetime.now().date().isoformat()
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(

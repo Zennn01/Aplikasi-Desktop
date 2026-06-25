@@ -1,15 +1,19 @@
 import tkinter as tk
 from tkinter import messagebox
-from datetime import datetime
+
+from views.window_utils import center_window
 
 
 class AbsensiView:
-    def __init__(self, root, today_absensi, on_absen, on_back):
+    def __init__(self, root, today_absensi, display_datetime, on_absen, on_back):
         self.root = root
         self.today_absensi = today_absensi
+        self.display_datetime = display_datetime
         self.on_absen = on_absen
         self.on_back = on_back
         self.frame = None
+        self.clock_label = None
+        self.clock_after_id = None
         self.status_var = tk.StringVar(value="hadir")
         self.keterangan_var = tk.StringVar()
         self.keterangan_label = None
@@ -17,14 +21,16 @@ class AbsensiView:
 
     def show(self):
         self.root.title("Absensi")
-        self.root.geometry("520x460")
+        center_window(self.root, 520, 460)
         self.root.configure(bg="#eef2f7")
         self.frame = tk.Frame(self.root, bg="#eef2f7")
         self.frame.pack(fill="both", expand=True, padx=30, pady=30)
         card = tk.Frame(self.frame, bg="white", highlightbackground="#d9e2ec", highlightthickness=1)
         card.pack(fill="both", expand=True)
         tk.Label(card, text="Absensi Hari Ini", bg="white", fg="#0f172a", font=("Arial", 20, "bold")).pack(pady=(30, 8))
-        tk.Label(card, text=datetime.now().strftime("%d-%m-%Y %H:%M:%S"), bg="white", fg="#64748b", font=("Arial", 11)).pack(pady=(0, 20))
+        self.clock_label = tk.Label(card, text="", bg="white", fg="#64748b", font=("Arial", 11))
+        self.clock_label.pack(pady=(0, 20))
+        self._update_clock()
 
         if self.today_absensi:
             text = f"Sudah absen: {self.today_absensi['status']} pukul {self.today_absensi['jam_masuk']}"
@@ -41,6 +47,9 @@ class AbsensiView:
         tk.Button(card, text="Kembali", command=self.on_back, bg="white", fg="#2563eb", relief="flat", font=("Arial", 10, "underline"), cursor="hand2").pack(pady=18)
 
     def destroy(self):
+        if self.clock_after_id:
+            self.root.after_cancel(self.clock_after_id)
+            self.clock_after_id = None
         if self.frame:
             self.frame.destroy()
 
@@ -63,3 +72,9 @@ class AbsensiView:
         status = self.status_var.get()
         keterangan = self.keterangan_var.get() if status in ("izin", "sakit") else ""
         self.on_absen(status, keterangan)
+
+    def _update_clock(self):
+        if not self.clock_label or not self.clock_label.winfo_exists():
+            return
+        self.clock_label.configure(text=self.display_datetime())
+        self.clock_after_id = self.root.after(1000, self._update_clock)

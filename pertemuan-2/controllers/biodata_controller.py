@@ -1,6 +1,7 @@
 from tkinter import messagebox
 
 from models.absensi_model import AbsensiModel
+from models.time_model import TimeModel
 from models.user_model import UserModel
 from views.absensi_admin_view import AbsensiAdminView
 from views.absensi_view import AbsensiView
@@ -20,6 +21,7 @@ class BioDataController:
         self.root = root
         self.user_model = UserModel()
         self.absensi_model = AbsensiModel()
+        self.time_model = TimeModel()
         self.current_user = None
         self.view = None
 
@@ -80,12 +82,16 @@ class BioDataController:
         self.refresh_current_user()
         self.clear_window()
         today_absensi = None
+        today = self.time_model.today_iso()
         if self.current_user["role"] != "admin":
-            today_absensi = self.absensi_model.get_absensi_hari_ini(self.current_user["id"])
+            today_absensi = self.absensi_model.get_absensi_hari_ini(
+                self.current_user["id"], today
+            )
         self.view = DashboardView(
             self.root,
             self.current_user,
             today_absensi,
+            self.time_model.display_datetime,
             {
                 "absensi": self.show_absensi if self.current_user["role"] != "admin" else self.show_absensi_admin,
                 "biodata": self.show_biodata,
@@ -100,15 +106,25 @@ class BioDataController:
         if not self.require_login():
             return
         self.clear_window()
-        today_absensi = self.absensi_model.get_absensi_hari_ini(self.current_user["id"])
-        self.view = AbsensiView(self.root, today_absensi, self.handle_absen_masuk, self.show_dashboard)
+        today_absensi = self.absensi_model.get_absensi_hari_ini(
+            self.current_user["id"], self.time_model.today_iso()
+        )
+        self.view = AbsensiView(
+            self.root,
+            today_absensi,
+            self.time_model.display_datetime,
+            self.handle_absen_masuk,
+            self.show_dashboard,
+        )
         self.view.show()
 
     def handle_absen_masuk(self, status, keterangan):
         if not self.require_login():
             return
         try:
-            self.absensi_model.absen_masuk(self.current_user["id"], status, keterangan)
+            self.absensi_model.absen_masuk(
+                self.current_user["id"], status, keterangan, self.time_model.now()
+            )
             self.view.show_success("Absensi berhasil disimpan")
             self.show_absensi()
         except ValueError as error:
